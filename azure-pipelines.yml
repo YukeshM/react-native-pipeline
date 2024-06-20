@@ -43,8 +43,12 @@ steps:
   displayName: 'Build Android (Windows)'
   condition: eq(variables['Agent.OS'], 'Windows_NT')
   env:
-    JAVA_HOME: '/path/to/java11' # Ensure this points to your Java 11 installation
-    ANDROID_HOME: '/path/to/android/sdk'
+    JAVA_HOME: $(JAVA_HOME)
+    ANDROID_HOME: $(ANDROID_HOME)
+    MYAPP_RELEASE_STORE_FILE: $(MYAPP_RELEASE_STORE_FILE)
+    MYAPP_RELEASE_KEY_ALIAS: $(MYAPP_RELEASE_KEY_ALIAS)
+    MYAPP_RELEASE_STORE_PASSWORD: $(MYAPP_RELEASE_STORE_PASSWORD)
+    MYAPP_RELEASE_KEY_PASSWORD: $(MYAPP_RELEASE_KEY_PASSWORD)
 
 - script: |
     cd android
@@ -52,8 +56,12 @@ steps:
   displayName: 'Build Android AAB (Windows)'
   condition: eq(variables['Agent.OS'], 'Windows_NT')
   env:
-    JAVA_HOME: '/path/to/java11' # Ensure this points to your Java 11 installation
-    ANDROID_HOME: '/path/to/android/sdk'
+    JAVA_HOME: $(JAVA_HOME)
+    ANDROID_HOME: $(ANDROID_HOME)
+    MYAPP_RELEASE_STORE_FILE: $(MYAPP_RELEASE_STORE_FILE)
+    MYAPP_RELEASE_KEY_ALIAS: $(MYAPP_RELEASE_KEY_ALIAS)
+    MYAPP_RELEASE_STORE_PASSWORD: $(MYAPP_RELEASE_STORE_PASSWORD)
+    MYAPP_RELEASE_KEY_PASSWORD: $(MYAPP_RELEASE_KEY_PASSWORD)
 
 # - script: |
 #     cd android
