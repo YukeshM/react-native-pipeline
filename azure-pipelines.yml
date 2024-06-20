@@ -16,11 +16,59 @@ steps:
   displayName: 'Install node.js'
 
 - script: |
-    npm install -g yarn
-    yarn install
+    npm install
   displayName: 'Install dependencies'
 
-- script: |
-    cd android && ./gradlew assembleRelease
-  displayName: 'Build Android'
+- task: DownloadSecureFile@1
+  name: keystoreFile
+  inputs:
+    secureFile: 'debug.keystore'
+  displayName: 'Download Keystore File'
 
+- script: |
+    mkdir -p $HOME/.android
+    mv $(Agent.TempDirectory)/debug.keystore $HOME/.android/debug.keystore
+  displayName: 'Move Keystore to Home Directory'
+  condition: or( eq(variables['Agent.OS'], 'Linux'), eq(variables['Agent.OS'], 'Darwin'))
+
+- script: |
+    mkdir %USERPROFILE%\.android
+    move %AGENT_TEMPDIRECTORY%\debug.keystore %USERPROFILE%\.android\debug.keystore
+  displayName: 'Move Keystore to Home Directory'
+  condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+- script: |
+    cd android
+    gradlew.bat assembleRelease -PMYAPP_RELEASE_STORE_FILE=%USERPROFILE%\.android\debug.keystore -PMYAPP_RELEASE_KEY_ALIAS=%MYAPP_RELEASE_KEY_ALIAS% -PMYAPP_RELEASE_STORE_PASSWORD=%MYAPP_RELEASE_STORE_PASSWORD% -PMYAPP_RELEASE_KEY_PASSWORD=%MYAPP_RELEASE_KEY_PASSWORD%
+  displayName: 'Build Android (Windows)'
+  condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+- script: |
+    cd android
+    gradlew.bat bundleRelease -PMYAPP_RELEASE_STORE_FILE=%USERPROFILE%\.android\debug.keystore -PMYAPP_RELEASE_KEY_ALIAS=%MYAPP_RELEASE_KEY_ALIAS% -PMYAPP_RELEASE_STORE_PASSWORD=%MYAPP_RELEASE_STORE_PASSWORD% -PMYAPP_RELEASE_KEY_PASSWORD=%MYAPP_RELEASE_KEY_PASSWORD%
+  displayName: 'Build Android AAB (Windows)'
+  condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+# - script: |
+#     cd android
+#     ./gradlew bundleRelease -PMYAPP_RELEASE_STORE_FILE=$HOME/.android/debug.keystore -PMYAPP_RELEASE_KEY_ALIAS=$(MYAPP_RELEASE_KEY_ALIAS) -PMYAPP_RELEASE_STORE_PASSWORD=$(MYAPP_RELEASE_STORE_PASSWORD) -PMYAPP_RELEASE_KEY_PASSWORD=$(MYAPP_RELEASE_KEY_PASSWORD)
+#   displayName: 'Build Android AAB (Unix)'
+#   condition: eq(variables['Agent.OS'], 'Linux') || eq(variables['Agent.OS'], 'Darwin')
+
+# - script: |
+#     cd android
+#     gradlew.bat bundleRelease
+#   displayName: 'Build Android AAB (Windows)'
+#   condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+# - script: |
+#     cd android
+#     ./gradlew assembleRelease
+#   displayName: 'Build Android (Unix)'
+#   condition: eq(variables['Agent.OS'], 'Linux')
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.SourcesDirectory)/android/app/build/outputs/bundle/release'
+    artifactName: 'aab'
+  displayName: 'Publish AAB'
