@@ -1,0 +1,26 @@
+# Android
+# Build your Android project with Gradle.
+# Add steps that test, sign, and distribute the APK, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/android
+
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.12.2'
+  displayName: 'Install node.js'
+
+- script: |
+    npm install -g yarn
+    yarn install
+  displayName: 'Install dependencies'
+
+- script: |
+    cd android && ./gradlew assembleRelease
+  displayName: 'Build Android'
+
