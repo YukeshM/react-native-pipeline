@@ -51,36 +51,3 @@ steps:
     pathtoPublish: '$(Build.SourcesDirectory)/android/app/build/outputs/bundle/release'
     artifactName: 'aab'
   displayName: 'Publish AAB'
-
-# Unix steps (Linux, MacOS)
-- script: |
-    mkdir -p $HOME/.android
-    mv $(Agent.TempDirectory)/debug.keystore $HOME/.android/debug.keystore
-  displayName: 'Move Keystore to Home Directory'
-  condition: or(eq(variables['Agent.OS'], 'Linux'), eq(variables['Agent.OS'], 'Darwin'))
-
-- script: |
-    cd android
-    ./gradlew assembleRelease -PMYAPP_RELEASE_STORE_FILE=$HOME/.android/debug.keystore -PMYAPP_RELEASE_KEY_ALIAS=$(MYAPP_RELEASE_KEY_ALIAS) -PMYAPP_RELEASE_STORE_PASSWORD=$(MYAPP_RELEASE_STORE_PASSWORD) -PMYAPP_RELEASE_KEY_PASSWORD=$(MYAPP_RELEASE_KEY_PASSWORD)
-  displayName: 'Build Android (Unix)'
-  condition: or(eq(variables['Agent.OS'], 'Linux'), eq(variables['Agent.OS'], 'Darwin'))
-  env:
-    JAVA_HOME: $(JAVA_HOME)
-    ANDROID_HOME: $(ANDROID_HOME)
-    MYAPP_RELEASE_STORE_FILE: $(MYAPP_RELEASE_STORE_FILE)
-    MYAPP_RELEASE_KEY_ALIAS: $(MYAPP_RELEASE_KEY_ALIAS)
-    MYAPP_RELEASE_STORE_PASSWORD: $(MYAPP_RELEASE_STORE_PASSWORD)
-    MYAPP_RELEASE_KEY_PASSWORD: $(MYAPP_RELEASE_KEY_PASSWORD)
-
-- script: |
-    cd android
-    ./gradlew bundleRelease -PMYAPP_RELEASE_STORE_FILE=$HOME/.android/debug.keystore -PMYAPP_RELEASE_KEY_ALIAS=$(MYAPP_RELEASE_KEY_ALIAS) -PMYAPP_RELEASE_STORE_PASSWORD=$(MYAPP_RELEASE_STORE_PASSWORD) -PMYAPP_RELEASE_KEY_PASSWORD=$(MYAPP_RELEASE_KEY_PASSWORD)
-  displayName: 'Build Android AAB (Unix)'
-  condition: or(eq(variables['Agent.OS'], 'Linux'), eq(variables['Agent.OS'], 'Darwin'))
-  env:
-    JAVA_HOME: $(JAVA_HOME)
-    ANDROID_HOME: $(ANDROID_HOME)
-    MYAPP_RELEASE_STORE_FILE: $(MYAPP_RELEASE_STORE_FILE)
-    MYAPP_RELEASE_KEY_ALIAS: $(MYAPP_RELEASE_KEY_ALIAS)
-    MYAPP_RELEASE_STORE_PASSWORD: $(MYAPP_RELEASE_STORE_PASSWORD)
-    MYAPP_RELEASE_KEY_PASSWORD: $(MYAPP_RELEASE_KEY_PASSWORD)
