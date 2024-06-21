@@ -1,8 +1,3 @@
-# Android
-# Build your Android project with Gradle.
-# Add steps that test, sign, and distribute the APK, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/android
-
 trigger:
 - main
 
@@ -19,17 +14,17 @@ steps:
     npm install
   displayName: 'Install dependencies'
 
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '11'
+    jdkArchitectureOption: 'x64'
+  displayName: 'Set up JDK 11'
+
 - task: DownloadSecureFile@1
   name: keystoreFile
   inputs:
     secureFile: 'debug.keystore'
   displayName: 'Download Keystore File'
-
-- script: |
-    mkdir -p $HOME/.android
-    mv $(Agent.TempDirectory)/debug.keystore $HOME/.android/debug.keystore
-  displayName: 'Move Keystore to Home Directory'
-  condition: or( eq(variables['Agent.OS'], 'Linux'), eq(variables['Agent.OS'], 'Darwin'))
 
 - script: |
     mkdir %USERPROFILE%\.android
@@ -62,24 +57,6 @@ steps:
     MYAPP_RELEASE_KEY_ALIAS: $(MYAPP_RELEASE_KEY_ALIAS)
     MYAPP_RELEASE_STORE_PASSWORD: $(MYAPP_RELEASE_STORE_PASSWORD)
     MYAPP_RELEASE_KEY_PASSWORD: $(MYAPP_RELEASE_KEY_PASSWORD)
-
-# - script: |
-#     cd android
-#     ./gradlew bundleRelease -PMYAPP_RELEASE_STORE_FILE=$HOME/.android/debug.keystore -PMYAPP_RELEASE_KEY_ALIAS=$(MYAPP_RELEASE_KEY_ALIAS) -PMYAPP_RELEASE_STORE_PASSWORD=$(MYAPP_RELEASE_STORE_PASSWORD) -PMYAPP_RELEASE_KEY_PASSWORD=$(MYAPP_RELEASE_KEY_PASSWORD)
-#   displayName: 'Build Android AAB (Unix)'
-#   condition: eq(variables['Agent.OS'], 'Linux') || eq(variables['Agent.OS'], 'Darwin')
-
-# - script: |
-#     cd android
-#     gradlew.bat bundleRelease
-#   displayName: 'Build Android AAB (Windows)'
-#   condition: eq(variables['Agent.OS'], 'Windows_NT')
-
-# - script: |
-#     cd android
-#     ./gradlew assembleRelease
-#   displayName: 'Build Android (Unix)'
-#   condition: eq(variables['Agent.OS'], 'Linux')
 
 - task: PublishBuildArtifacts@1
   inputs:
