@@ -18,7 +18,7 @@ steps:
   inputs:
     versionSpec: '11'
     jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'AzureHosted'  # Use Azure-hosted JDK
+    jdkSourceOption: 'AzureHosted'  # Ensure Azure-hosted JDK
   displayName: 'Set up JDK 11'
 
 - task: DownloadSecureFile@1
