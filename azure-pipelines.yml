@@ -16,10 +16,10 @@ steps:
 
 - task: JavaToolInstaller@0
   inputs:
-    versionSpec: '11'
+    versionSpec: '17'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
-  displayName: 'Set up JDK 11'
+  displayName: 'Set up JDK 17'
 
 - task: DownloadSecureFile@1
   name: keystoreFile
