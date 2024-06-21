@@ -47,9 +47,9 @@ steps:
     MYAPP_RELEASE_KEY_PASSWORD: $(MYAPP_RELEASE_KEY_PASSWORD)
 
 - script: |
-    echo "Listing contents of build outputs directory:"
-    dir android\app\build\outputs\bundle\release
-  displayName: 'List build outputs'
+    echo "Listing contents of android/app/build/outputs directory:"
+    dir android\app\build\outputs
+  displayName: 'List build outputs directory'
 
 - task: PublishBuildArtifacts@1
   inputs:
