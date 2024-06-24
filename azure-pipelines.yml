@@ -1,5 +1,5 @@
 trigger:
-- main
+- trial
 
 pool:
   vmImage: 'windows-latest'
