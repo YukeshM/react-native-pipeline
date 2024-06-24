@@ -1,0 +1,58 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.12.2'
+  displayName: 'Install node.js'
+
+- script: |
+    npm install
+  displayName: 'Install dependencies'
+
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+  displayName: 'Set up JDK 17'
+
+- task: DownloadSecureFile@1
+  name: keystoreFile
+  inputs:
+    secureFile: 'debug.keystore'
+  displayName: 'Download Keystore File'
+
+- script: |
+    mkdir %USERPROFILE%\.android
+    move %AGENT_TEMPDIRECTORY%\debug.keystore %USERPROFILE%\.android\debug.keystore
+  displayName: 'Move Keystore to Home Directory'
+  condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+- script: |
+    cd android
+    gradlew.bat assembleRelease -PMYAPP_RELEASE_STORE_FILE=%USERPROFILE%\.android\debug.keystore -PMYAPP_RELEASE_KEY_ALIAS=%MYAPP_RELEASE_KEY_ALIAS% -PMYAPP_RELEASE_STORE_PASSWORD=%MYAPP_RELEASE_STORE_PASSWORD% -PMYAPP_RELEASE_KEY_PASSWORD=%MYAPP_RELEASE_KEY_PASSWORD%
+  displayName: 'Build Android (Windows)'
+  condition: eq(variables['Agent.OS'], 'Windows_NT')
+  env:
+    JAVA_HOME: $(JAVA_HOME)
+    ANDROID_HOME: $(ANDROID_HOME)
+    MYAPP_RELEASE_STORE_FILE: $(MYAPP_RELEASE_STORE_FILE)
+    MYAPP_RELEASE_KEY_ALIAS: $(MYAPP_RELEASE_KEY_ALIAS)
+    MYAPP_RELEASE_STORE_PASSWORD: $(MYAPP_RELEASE_STORE_PASSWORD)
+    MYAPP_RELEASE_KEY_PASSWORD: $(MYAPP_RELEASE_KEY_PASSWORD)
+
+- script: |
+    echo "Listing contents of android/app/build/outputs directory:"
+    dir android\app\build\outputs
+  displayName: 'List build outputs directory'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.SourcesDirectory)/android/app/build/outputs/bundle/release'
+    artifactName: 'aab'
+  displayName: 'Publish AAB'
