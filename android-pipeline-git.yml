@@ -60,6 +60,6 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(Build.SourcesDirectory)/android/app/build/outputs/bundle/release'
+    pathtoPublish: '$(Build.SourcesDirectory)/android/app/build/outputs/release'
     artifactName: 'aab'
   displayName: 'Publish AAB'
