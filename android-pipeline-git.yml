@@ -36,6 +36,7 @@ steps:
 - script: |
     cd android
     gradlew.bat assembleRelease -PMYAPP_RELEASE_STORE_FILE=%USERPROFILE%\.android\debug.keystore -PMYAPP_RELEASE_KEY_ALIAS=%MYAPP_RELEASE_KEY_ALIAS% -PMYAPP_RELEASE_STORE_PASSWORD=%MYAPP_RELEASE_STORE_PASSWORD% -PMYAPP_RELEASE_KEY_PASSWORD=%MYAPP_RELEASE_KEY_PASSWORD%
+    gradlew.bat bundleRelease -PMYAPP_RELEASE_STORE_FILE=%USERPROFILE%\.android\debug.keystore -PMYAPP_RELEASE_KEY_ALIAS=%MYAPP_RELEASE_KEY_ALIAS% -PMYAPP_RELEASE_STORE_PASSWORD=%MYAPP_RELEASE_STORE_PASSWORD% -PMYAPP_RELEASE_KEY_PASSWORD=%MYAPP_RELEASE_KEY_PASSWORD%
   displayName: 'Build Android (Windows)'
   condition: eq(variables['Agent.OS'], 'Windows_NT')
   env:
@@ -50,6 +51,12 @@ steps:
     echo "Listing contents of android/app/build/outputs directory:"
     dir android\app\build\outputs
   displayName: 'List build outputs directory'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.SourcesDirectory)/android/app/build/outputs/apk/release'
+    artifactName: 'apk'
+  displayName: 'Publish APK'
 
 - task: PublishBuildArtifacts@1
   inputs:
